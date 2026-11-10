@@ -1,0 +1,106 @@
+﻿[
+    {
+        "Key":  "UPD-2387",
+        "Summary":  "UPD CSB26 Post Launch :: PREMIER EMEA T2 :: PLP - Missing  HMC Banner ",
+        "Priority":  "P4 - Medium",
+        "Status":  "Waiting for Dev",
+        "Assignee":  "Shetty, Arpita R",
+        "Age":  480
+    },
+    {
+        "Key":  "UPD-2386",
+        "Summary":  "UPD CSB26 Post Launch :: PREMIER EMEA T2 :: PLP - Missing HMC MFE CTA in Hero Banner  and ANAV",
+        "Priority":  "P4 - Medium",
+        "Status":  "Waiting for Dev",
+        "Assignee":  "Shetty, Arpita R",
+        "Age":  480
+    },
+    {
+        "Key":  "MAV-810898",
+        "Summary":  "MicroContentString collection : Latest Profile Tagging Wiped Out by Subsequent Untag Event Processing",
+        "Priority":  "P4 - Medium",
+        "Status":  "Proposed",
+        "Assignee":  "Shetty, Arpita R",
+        "Age":  14
+    },
+    {
+        "Key":  "MAV-790788",
+        "Summary":  "SPL Prod Std Offers :: SPL Disti Store - Std Offers PD Flyout not showing Warranty Duration for SPL Offers",
+        "Priority":  "P3 - High",
+        "Status":  "Defining Details",
+        "Assignee":  "Shetty, Arpita R",
+        "Age":  48
+    },
+    {
+        "Key":  "MAV-789654",
+        "Summary":  "US SNP offers missing in DP taxonomy",
+        "Priority":  "P2 - Very High",
+        "Status":  "Proposed",
+        "Assignee":  "Shetty, Arpita R",
+        "Age":  49
+    },
+    {
+        "Key":  "MAV-788391",
+        "Summary":  "ODW_1.0_INC# : Incorrect name + Missing image",
+        "Priority":  "P4 - Medium",
+        "Status":  "Proposed",
+        "Assignee":  "Shetty, Arpita R",
+        "Age":  51
+    },
+    {
+        "Key":  "MAV-786117",
+        "Summary":  "APD feature section content is missing",
+        "Priority":  "P3 - High",
+        "Status":  "In Development",
+        "Assignee":  "Shetty, Arpita R",
+        "Age":  54
+    },
+    {
+        "Key":  "MAV-781007",
+        "Summary":  "Gaming Monitors Category Incorrectly Displayed in Premier UX When No Eligible Offers Exist",
+        "Priority":  "P2 - Very High",
+        "Status":  "Proposed",
+        "Assignee":  "Shetty, Arpita R",
+        "Age":  60
+    },
+    {
+        "Key":  "MAV-776383",
+        "Summary":  "Need DSC to take and display offer name from CPQ",
+        "Priority":  "P1 - Urgent",
+        "Status":  "Waiting for Dev",
+        "Assignee":  "Shetty, Arpita R",
+        "Age":  68
+    },
+    {
+        "Key":  "MAV-758705",
+        "Summary":  "Offer Content Missing for Brazil (pt) Offers",
+        "Priority":  "P4 - Medium",
+        "Status":  "Proposed",
+        "Assignee":  "Shetty, Arpita R",
+        "Age":  94
+    },
+    {
+        "Key":  "MAV-733431",
+        "Summary":  "PROD: Datapipeline offer data - invalid property type",
+        "Priority":  "P2 - Very High",
+        "Status":  "Defining Details",
+        "Assignee":  "Shetty, Arpita R",
+        "Age":  116
+    },
+    {
+        "Key":  "COEA-4443",
+        "Summary":  "Content Needing To Be Marked Up As A List - Content that functions as a list should be indicated as such to screen reader users.",
+        "Priority":  "P4 - Medium",
+        "Status":  "Proposed",
+        "Assignee":  "Shetty, Arpita R",
+        "Age":  17
+    },
+    {
+        "Key":  "COEA-4375",
+        "Summary":  "Link Purpose Unclear To Screen Reader Users - Screen reader users need additional context to understand the purpose of the \"Learn more\" link.",
+        "Priority":  "P2 - Very High",
+        "Status":  "Proposed",
+        "Assignee":  "Shetty, Arpita R",
+        "Age":  17
+    }
+]

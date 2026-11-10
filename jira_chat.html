@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jira Chat Assistant</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }
+        .chat-box { height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; background: #f9f9f9; }
+        .message { margin-bottom: 10px; padding: 8px 12px; border-radius: 8px; max-width: 80%; white-space: pre-wrap; word-wrap: break-word; }
+        .message.user { background: #667eea; color: white; margin-left: auto; }
+        .message.bot { background: #e0e0e0; color: #333; }
+        .input-area { display: flex; gap: 10px; }
+        .input-area input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .input-area button { padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .input-area button:hover { background: #5568d3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>[Chat] Jira Chat Assistant</h1>
+        <p>Ask questions about your Jira issues. This works alongside your dashboard.</p>
+        <div class="chat-box" id="chatBox">
+            <div class="message bot">Hello! I can help you analyze your Jira data. Try asking:</div>
+            <div class="message bot">- "How many P1 issues?"</div>
+            <div class="message bot">- "Issues older than 30 days"</div>
+            <div class="message bot">- "Status breakdown"</div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="chatInput" placeholder="Ask a question..." onkeypress="if(event.key === 'Enter') sendMessage()">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <script>
+        // Load Jira data from dashboard
+        let jiraData = [];
+        let dataLoaded = false;
+        
+        addMessage("Loading Jira data...", 'bot');
+        
+        fetch('dashboard.json')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load');
+                return response.json();
+            })
+            .then(data => {
+                jiraData = data;
+                dataLoaded = true;
+                addMessage("✓ Loaded " + data.length + " issues from Jira. Ready for questions!", 'bot');
+            })
+            .catch(err => {
+                addMessage("✗ Could not load Jira data. Please regenerate the dashboard first.", 'bot');
+                console.error('Error loading data:', err);
+            });
+        
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addMessage(message, 'user');
+            input.value = '';
+            
+            if (!dataLoaded) {
+                setTimeout(() => {
+                    addMessage("Please wait for data to load, or regenerate the dashboard.", 'bot');
+                }, 200);
+                return;
+            }
+            
+            setTimeout(() => {
+                const response = processQuestion(message, jiraData);
+                addMessage(response, 'bot');
+            }, 300);
+        }
+        
+        function addMessage(text, type) {
+            const chatBox = document.getElementById('chatBox');
+            const div = document.createElement('div');
+            div.className = 'message ' + type;
+            div.textContent = text;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        
+        function processQuestion(question, data) {
+            const q = question.toLowerCase();
+            
+            console.log('Processing question:', question);
+            console.log('Data length:', data.length);
+            
+            if (!data || data.length === 0) {
+                return "No data available. Please run the dashboard generator first.";
+            }
+            
+            // Check for specific issue key (e.g., MAV-789654)
+            const issueKeyMatch = q.match(/[a-z]+-\d+/i);
+            if (issueKeyMatch) {
+                const searchKey = issueKeyMatch[0].toUpperCase();
+                const issue = data.find(i => i.Key && i.Key.toUpperCase() === searchKey);
+                if (issue) {
+                    let details = `[ISSUE DETAILS]: ${issue.Key}\n\n`;
+                    details += `Summary: ${issue.Summary}\n`;
+                    details += `Priority: ${issue.Priority}\n`;
+                    details += `Status: ${issue.Status}\n`;
+                    details += `Age: ${issue.Age} days\n`;
+                    details += `Assignee: ${issue.Assignee}\n`;
+                    details += `\n[Link] View: https://jira.dell.com/browse/${issue.Key}`;
+                    return details;
+                } else {
+                    return `Issue ${searchKey} not found in your assigned issues.`;
+                }
+            }
+            
+            // Priority questions
+            if (q.includes('p1') || q.includes('priority')) {
+                const p1 = data.filter(i => i.Priority && i.Priority.includes('P1')).length;
+                const p2 = data.filter(i => i.Priority && i.Priority.includes('P2')).length;
+                const p3 = data.filter(i => i.Priority && i.Priority.includes('P3')).length;
+                return `P1 (Urgent): ${p1}, P2 (Very High): ${p2}, P3 (High): ${p3}`;
+            }
+            
+            // Age questions
+            if (q.includes('old') || q.includes('age') || q.includes('day')) {
+                const thirty = data.filter(i => i.Age >= 30).length;
+                const sixty = data.filter(i => i.Age >= 60).length;
+                const avg = data.length > 0 ? Math.round(data.reduce((a,b) => a + (b.Age || 0), 0) / data.length) : 0;
+                return `30+ days: ${thirty}, 60+ days: ${sixty}, Average age: ${avg} days`;
+            }
+            
+            // Status questions
+            if (q.includes('status') || q.includes('state')) {
+                const counts = {};
+                data.forEach(i => {
+                    if (i.Status) {
+                        counts[i.Status] = (counts[i.Status] || 0) + 1;
+                    }
+                });
+                const statusList = Object.entries(counts).map(([s,c]) => `${s}: ${c}`).join(', ');
+                return `Status breakdown: ${statusList}`;
+            }
+            
+            // Count questions
+            if (q.includes('how many') || q.includes('count') || q.includes('total')) {
+                return `You have ${data.length} total issues in production`;
+            }
+            
+            // Summary - catch all for general questions
+            if (q.includes('summary') || q.includes('overview') || q.includes('what') || q.includes('tell me')) {
+                const p1 = data.filter(i => i.Priority && i.Priority.includes('P1')).length;
+                const p2 = data.filter(i => i.Priority && i.Priority.includes('P2')).length;
+                const p3 = data.filter(i => i.Priority && i.Priority.includes('P3')).length;
+                const avg = data.length > 0 ? Math.round(data.reduce((a,b) => a + (b.Age || 0), 0) / data.length) : 0;
+                const sixty = data.filter(i => i.Age >= 60).length;
+                
+                let summary = `[SUMMARY] OF YOUR JIRA ISSUES\n\n`;
+                summary += `Total Issues: ${data.length}\n`;
+                summary += `Average Age: ${avg} days\n`;
+                summary += `Issues 60+ days old: ${sixty}\n\n`;
+                summary += `[PRIORITY BREAKDOWN]\n`;
+                summary += `P1 (Urgent): ${p1}\n`;
+                summary += `P2 (Very High): ${p2}\n`;
+                summary += `P3 (High): ${p3}\n`;
+                
+                return summary;
+            }
+            
+            // List issues
+            if (q.includes('list') || q.includes('show')) {
+                const top5 = data.slice(0, 5).map(i => `${i.Key}: ${i.Summary}`).join('\n');
+                return `Top 5 issues:\n${top5}`;
+            }
+            
+            return "I can help you analyze your Jira data. Try asking about:\n- Specific issue (e.g., MAV-789654)\n- Priorities (P1, P2, P3)\n- Age (old issues, average age)\n- Status breakdown\n- Total count\n- Summary/overview\n- List issues";
+        }
+    </script>
+</body>
+</html>
